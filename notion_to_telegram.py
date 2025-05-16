@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 import logging
+import sys
 
 # Konfigurasi logging
 logging.basicConfig(level=logging.INFO)
@@ -107,12 +108,13 @@ def extract_formula(prop):
 def main():
     notion_data = get_notion_data()
     if not notion_data:
-        return
+        logger.info("No data returned from Notion.")
+        sys.exit(0)
 
     results = notion_data.get("results", [])
     if not results:
         logger.info("No data found.")
-        return
+        sys.exit(0)
 
     sent_ids = read_sent_ids()
 
@@ -166,6 +168,9 @@ def main():
             send_to_telegram(id_telegram_as, message)
             sent_ids.append(item_id)
             save_sent_ids(sent_ids)
+
+        logger.info("Processing completed.")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
